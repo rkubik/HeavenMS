@@ -1,20 +1,25 @@
 version: '3'
 services:
   maplestory:
-    network_mode: "host"
     build: .
     depends_on:
       - db
     environment:
       WAIT_HOSTS: localhost:3306
-    
+    network_mode: service:db
+    restart: unless-stopped
   db:
-    network_mode: "host"
     image: mysql:5.6
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: "heavenms"
-      MYSQL_USER: "root"
-      MYSQL_PASSWORD: ""
+      MYSQL_USER: "heavenms"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
+      - ${SERVER_DATA_DIR}/mysql:/var/lib/mysql
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT1}:7575/tcp"
+      - "${SERVER_PORT2}:7576/tcp"
+      - "${SERVER_PORT3}:7577/tcp"
+      - "${SERVER_PORT4}:8484/tcp"
